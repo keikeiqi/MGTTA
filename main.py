@@ -321,7 +321,7 @@ def get_args():
     parser.add_argument('--seed', default=2020, type=int, help='seed for initializing training. ')
     parser.add_argument('--gpu', default=0, type=int, help='GPU id to use.')
     parser.add_argument('--debug', default=False, type=bool, help='debug or not.')
-    parser.add_argument('--workers', default=2, type=int, help='number of data loading workers (default: 4)')
+    parser.add_argument('--workers', default=8, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--batch_size', default=64, type=int, help='mini-batch size (default: 64)')
     parser.add_argument('--if_shuffle', default=True, type=str2bool, help='if shuffle the test set.')
 
@@ -381,13 +381,13 @@ def get_args():
     # train MGG
     parser.add_argument('--train_info_path', default='./train_info.pt', type=str, help='path of training statistics')
     parser.add_argument('--eval_adapt_lr', default=1e-3, type=float, help="lr for TTA updates during evaluation")    
-    parser.add_argument('--train_mgg_lr', default=1e-2, type=float, help='lr rate for MGG during training')
-    parser.add_argument('--train_adapt_lr', default=1e-4, type=float, help='lr rate for norm layer during training')
+    parser.add_argument('--train_mgg_lr', default=1e-2, type=float, help='lr for MGG during training')
+    parser.add_argument('--train_adapt_lr', default=1e-4, type=float, help='lr for norm layer during training')
     parser.add_argument('--train_mgg_epoch', default=40, type=int, help='Number of epochs for training MGG')
     parser.add_argument('--eval_interval_epochs', default=1, type=int, help='How many epochs to interval between each evaluation?')
     
     # MGTTA
-    parser.add_argument('--adapt_lr', default=0.005, type=float, help='lr for TTA methods')
+    parser.add_argument('--adapt_lr', default=1e-3, type=float, help='lr for TTA methods')
     parser.add_argument('--mgg_path', default='', type=str, help='ckpt path of mgg')
     # ttt
     parser.add_argument('--norm_dim', default=768, type=int, help='Dimension of norm layer for ViT')

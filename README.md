@@ -1,6 +1,6 @@
 # Learning to Generate Gradients for Test-Time Adaptation via Test-Time Training Layers
 
-This is the official project repository for Learning to Generate Gradients for [Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang Yaofo Chen Runhao Zeng Jian Chen Xiping Hu(AAAI 2025)](https://arxiv.org/pdf/2412.16901)
+This is the official project repository for Learning to Generate Gradients for [Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang Yaofo Chen Runhao Zeng Jian Chen Xiping Hu(AAAI 2025)](https://arxiv.org/pdf/2412.16901).
 
 MGTTA conducts model learning at test time to adapt a pre-trained model to test data that has distributional shifts ☀️ 🌧 ❄️, such as corruptions, simulation-to-real discrepancies, and other differences between training and testing data.
 
@@ -13,7 +13,6 @@ MGTTA conducts model learning at test time to adapt a pre-trained model to test 
 <img src="figures/MGTTA.jpg" alt="MGTTA" width="100%" align=center />
 </p>
 
-introduction of MGTTA ...
 
 **Dependencies Installation:**
 ```
@@ -50,23 +49,17 @@ outputs = adapt_model(inputs)
 
 # Example: Experiments of TTA on ImageNet-C
 
-**MGG ckechpoint for ImageNet-C and its variant datasets ImageNet-R/Sketch/A**
-We trained MGG using the validation set of ImageNet-C. It is applicable to the test sets of ImageNet-C/R/Sketch/A datasets. The checkpoint can be downloaded via the [link]().
-
 **Usage:**
-...
+
+Use the pre-trained MGG(Meta Gradient Generator) for TTA.
 
 ```
-adapt_lr=1e-3
 dataset=imagenet_c_test
-mgg_path=path_to_mgg_ckpt
 python main.py \
     --data /data/imagenet/ \
     --data_corruption /data/imagenet-c/ \
     --algorithm mgtta \
-    --tag /exp_tag \
-    --mgg_path $mgg_path \
-    --adapt_lr $adapt_lr \
+    --mgg_path ./shared/mgg_ckpt.pth \
     --dataset $dataset
 ```
 
@@ -86,11 +79,12 @@ The Table below demonstrates the result on ImageNet-C and its variant datasets u
 
 Please see our [PAPER 🔗](https://arxiv.org/pdf/2412.16901) for more detailed results.
 
-**Train MGG for other dataset:**
+
+**Train MGG for ImageNet-C/R/Sketch/A**
+
+We trained MGG on the mixed validation set of ImageNet-C, which contains four types of corruptions different from the test set. This MGG is applicable to the test sets of ImageNet-C/R/Sketch/A datasets. The checkpoint can be found in [here](./shared/mgg_ckpt.pth), or you can use the following command to train MGG on the specified dataset.
 ```
-train_mgg_epoch=40
 dataset=imagenet_c_val_mix
-used_data_num=128
 python main.py \
     --batch_size 2 \
     --workers 8 \
@@ -98,11 +92,10 @@ python main.py \
     --data_corruption /data/imagenet-c/ \
     --algorithm train_mgg \
     --tag /exp_tag \
-    --train_mgg_epoch $train_mgg_epoch
-    --used_data_num $used_data_num \
+    --used_data_num 128 \
     --dataset $dataset \
 ```
-Additional hyperparameter configurations can be found in run.sh and parser in main.py
+Additional hyperparameter configurations can be found in [run.sh](run.sh) and [main.py](main.py#L308-L398).
 
 # Correspondence
 
@@ -113,7 +106,6 @@ Please contact Qi Deng by[dengqi.kei at gmail.com] and Shuaicheng Niu by [shuaic
 If our MGTTA method or paper is helpful in your research, please consider citing our paper:
 
 ```
-
 @inproceedings{deng2025learning,
   title={Learning to Generate Gradients for Test-Time Adaptation via Test-Time Training Layers},
   author={Deng, Qi and Niu, Shuaicheng and Zhang, Ronghao and Chen, Yaofo and Zeng, Runhao and Chen, Jian and Hu, Xiping},
