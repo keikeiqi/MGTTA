@@ -1,16 +1,17 @@
 # Learning to Generate Gradients for Test-Time Adaptation via Test-Time Training Layers
 
-This is the official project repository for Learning to Generate Gradients for Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang Yaofo Chen Runhao Zeng Jian Chen Xiping Hu(AAAI 2025)
-<!-- 
-* 1️⃣ FOA conducts model learning at test time to adapt a pre-trained model to test data that has distributional shifts ☀️ 🌧 ❄️, such as corruptions, simulation-to-real discrepancies, and other differences between training and testing data.
-* 2️⃣ FOA performs adaptation on both _input_ and _output_ levels, which avoids modification to model parameters and adapts in a backpropagation-free manner. Consequently, FOA offers the following benefits:
-  1) reduces memory usage significantly, _e.g._, 5,165MB (Tent) $\rightarrow$ 832MB when using ViTBase and a _BS_ of 64. 
-  2) compatible with quantized models, which typically do not support backpropagation.
-  3) compatible with models on specialized chips, where parameters are hardcoded and non-modifiable. 
+This is the official project repository for Learning to Generate Gradients for [Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang Yaofo Chen Runhao Zeng Jian Chen Xiping Hu(AAAI 2025)](https://arxiv.org/pdf/2412.16901)
+
+MGTTA conducts model learning at test time to adapt a pre-trained model to test data that has distributional shifts ☀️ 🌧 ❄️, such as corruptions, simulation-to-real discrepancies, and other differences between training and testing data.
+
+* 1️⃣MGTTA devise a novel Meta Gradient Generator (MGG), which is automatically learned in a learning-to-optimize manner, to replace manually designed optimizers for TTA.
+
+* 2️⃣MGTTA introduce a lightweight yet efficient sequential modeling network, which can memorize the historical gradient information during a longterm online TTA process by encoding this information into model parameters via a reconstruction loss.
+
 
 <p align="center">
-<img src="figures/foa.png" alt="FOA" width="100%" align=center />
-</p> -->
+<img src="figures/MGTTA.jpg" alt="MGTTA" width="100%" align=center />
+</p>
 
 introduction of MGTTA ...
 
@@ -47,41 +48,65 @@ adapt_model.configure_model()
 outputs = adapt_model(inputs)
 ```
 
-# Example: ImageNet-C Experiments
+# Example: Experiments of TTA on ImageNet-C
+
+**MGG ckechpoint for ImageNet-C and its variant datasets ImageNet-R/Sketch/A**
+We trained MGG using the validation set of ImageNet-C. It is applicable to the test sets of ImageNet-C/R/Sketch/A datasets. The checkpoint can be downloaded via the [link]().
 
 **Usage:**
 ...
 
-<!-- ```
-python3 main.py \
-    --data path/to/imagenet \
-    --data_v2 path/to/imagenet-v2 \
-    --data_sketch path/to/imagenet-sketch \
-    --data_corruption path/to/imagenet-c \
-    --data_rendition path/to/imagenet-r \
-    --algorithm [tent/foa/lame/t3a/sar/cotta] \ 
-``` -->
+```
+adapt_lr=1e-3
+dataset=imagenet_c_test
+mgg_path=path_to_mgg_ckpt
+python main.py \
+    --data /data/imagenet/ \
+    --data_corruption /data/imagenet-c/ \
+    --algorithm mgtta \
+    --tag /exp_tag \
+    --mgg_path $mgg_path \
+    --adapt_lr $adapt_lr \
+    --dataset $dataset
+```
 
-<!-- 
 **Experimental Results**
 
-The Table below demonstrates the result of both full precision and quantized ViTs. The reported average accuracy (\%, $\uparrow$) / ECE (\%, $\downarrow$) is averaged over 15 different corruption types in ImageNet-C (severity level 5).
+The Table below demonstrates the result on ImageNet-C and its variant datasets using ViT. We reported average accuracy (\%, $\uparrow$) over 15 different corruption types on ImageNet-C (severity level 5).
 
-|         | ViT (full precision, 32-bit) | ViT (8-bit) | ViT (6-bit) |
-| ------- | :----------: | :---------: | :---------: |
-| NoAdapt | 55.5 / 10.5  | 54.1 / 10.8 | 47.7 / 9.9  |
-| LAME    | 54.1 / 11.0  | 52.5 / 12.4 | 45.8 / 10.4 |
-| T3A     | 56.9 / 26.8  | 55.1 / 25.9 | 45.4 / 30.1 |
-| Tent    | 59.6 / 18.5  |      -      |      -      |
-| CoTTA   |  61.7 / 6.5  |      -      |      -      |
-| SAR     |  62.7 / 7.0  |      -      |      -      |
-| FOA     |  66.3 / 3.2  | 63.5 / 3.8  | 55.8 / 5.5  |
+| Method     | ImageNet-C | ImageNet-R | ImageNet-Sketch | ImageNet-A |
+|------------|----------:|----------:|---------------:|----------:|
+| NoAdapt    |      55.5 |      59.5 |           44.5 |       0.1 |
+| TENT       |      59.6 |      63.9 |           49.1 |      52.9 |
+| SAR        |      62.7 |      63.3 |           48.7 |      52.5 |
+| FOA        |      66.3 |      63.8 |           49.9 |      51.5 |
+| EATA       |      66.5 |      63.3 |           50.9 |      53.4 |
+| DeYO       |      68.2 |      66.1 |           52.2 |      54.1 |
+| MGTTA(ours)| **71.3** | **70.2** |        **53.3** |  **56.7** |
 
-Please see our [PAPER 🔗]() for more detailed results. -->
+Please see our [PAPER 🔗](https://arxiv.org/pdf/2412.16901) for more detailed results.
+
+**Train MGG for other dataset:**
+```
+train_mgg_epoch=40
+dataset=imagenet_c_val_mix
+used_data_num=128
+python main.py \
+    --batch_size 2 \
+    --workers 8 \
+    --data /data/imagenet/ \
+    --data_corruption /data/imagenet-c/ \
+    --algorithm train_mgg \
+    --tag /exp_tag \
+    --train_mgg_epoch $train_mgg_epoch
+    --used_data_num $used_data_num \
+    --dataset $dataset \
+```
+Additional hyperparameter configurations can be found in run.sh and parser in main.py
 
 # Correspondence
 
-Please contact Qi Deng by[dengqi.kei at gmail.com] and Shuaicheng Niu by [shuaicheng.niu at ntu.edu.sg] and Guohao Chen by [secasper at mail.scut.edu.cn] and Ronghaoa Zhang by [zhangronghao16 at gmail.com] if you have any questions. 📬
+Please contact Qi Deng by[dengqi.kei at gmail.com] and Shuaicheng Niu by [shuaicheng.niu at ntu.edu.sg] and Ronghaoa Zhang by [zhangronghao16 at gmail.com] if you have any questions. 📬
 
 # Citation
 
