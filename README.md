@@ -16,7 +16,7 @@ MGTTA conducts model learning at test time to adapt a pre-trained model to test 
 
 **Dependencies Installation:**
 ```
-conda create -n FOA python=3.8.18
+conda create -n MGTTA python=3.8.18
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 pip install timm==0.9.10
 pip install transformers
