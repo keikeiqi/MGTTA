@@ -1,6 +1,6 @@
 # Learning to Generate Gradients for Test-Time Adaptation via Test-Time Training Layers
 
-This is the official project repository for Learning to Generate Gradients for [Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang Yaofo Chen Runhao Zeng Jian Chen Xiping Hu(AAAI 2025)](https://arxiv.org/pdf/2412.16901).
+This is the official project repository for Learning to Generate Gradients for [Test-Time Adaptation via Test-Time Training Layers by Qi Deng, Shuaicheng Niu, Ronghao Zhang, Yaofo Chen, Runhao Zeng, Jian Chen, Xiping Hu (AAAI 2025)](https://arxiv.org/pdf/2412.16901).
 
 MGTTA conducts model learning at test time to adapt a pre-trained model to test data that has distributional shifts ☀️ 🌧 ❄️, such as corruptions, simulation-to-real discrepancies, and other differences between training and testing data.
 
